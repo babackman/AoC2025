@@ -83,10 +83,16 @@ private static class Dial{
                     _position -= _positionCount;
                     zeroCount++;
                 }
+                else if (_position == 0){
+                    zeroCount++;
+                }
             } else if (movement.GetDirection() == 'L') {
                 _position -= steps;
                 if (_position < 0){
                     _position += _positionCount;
+                    zeroCount++;
+                }
+                else if (_position == 0){
                     zeroCount++;
                 }
             }
