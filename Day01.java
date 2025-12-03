@@ -7,8 +7,8 @@ public class Day01 {
         for (int i=0;i<input.size(); i++) {
             movements[i] = new DialMovement(input.get(i));
         }
-        p1(movements);
-        //p2(input);
+        //p1(movements);
+        p2(movements);
     }
 
     public static void p1(DialMovement[] movements)
@@ -23,6 +23,15 @@ public class Day01 {
         System.out.println("01.1: "+zeroCount);
     }
 
+    public static void p2(DialMovement[] movements)
+    {
+        Dial dial = new Dial();
+        int zeroCount=0;
+        for (DialMovement movement : movements){
+            zeroCount += dial.MoveAndCountZeroes(movement);
+        }
+        System.out.println("01.2: "+zeroCount);
+    }
     
 private static class DialMovement {
     public char _direction;
@@ -53,17 +62,39 @@ private static class Dial{
             _position += steps;
             if (_position > _maxPosition)
                 _position -= _positionCount;
+                
         }
         else if (movement.GetDirection()=='L'){
             _position -= steps;
-            if (_position < 0){
+            if (_position < 0)
                 _position += _positionCount;
-        }
         }
         return _position;
     }
     
-}
+    public int MoveAndCountZeroes(DialMovement movement) {
+        // count full revolutions:
+        int zeroCount = movement.GetSteps() / _positionCount;
+        int steps = movement.GetSteps() % _positionCount;
+        if (steps != 0) {
+            if (movement.GetDirection() == 'R') {
+                _position += steps;
+                if (_position > _maxPosition){
+                    _position -= _positionCount;
+                    zeroCount++;
+                }
+            } else if (movement.GetDirection() == 'L') {
+                _position -= steps;
+                if (_position < 0){
+                    _position += _positionCount;
+                    zeroCount++;
+                }
+            }
+        }
+        return zeroCount;
+    }
+    
+  }
 
 }
 
