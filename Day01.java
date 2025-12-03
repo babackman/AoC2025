@@ -44,19 +44,20 @@ private static class DialMovement {
 
 private static class Dial{
     private int _position=50;
-    private int _maxPosition=99;
+    private final int _positionCount=100;
+    private final int _maxPosition=_positionCount-1;
     
     public int Move(DialMovement movement){
-        int steps = movement.GetSteps() % (_maxPosition+1);
+        int steps = movement.GetSteps() % _positionCount;
         if (movement.GetDirection()=='R'){
             _position += steps;
             if (_position > _maxPosition)
-                _position -= (_maxPosition+1);
+                _position -= _positionCount;
         }
         else if (movement.GetDirection()=='L'){
             _position -= steps;
             if (_position < 0){
-                _position += (_maxPosition+1);
+                _position += _positionCount;
         }
         }
         return _position;
