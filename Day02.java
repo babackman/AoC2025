@@ -5,7 +5,7 @@ import java.util.List;
 public class Day02 {
     public static void Run(List<String> input)  {
         List<IdRange> ranges = ReadRanges(input.get(0));
-        part1(ranges);
+        part2(ranges);
     }
     
     public static void part1(List<IdRange> ranges)
@@ -15,6 +15,15 @@ public class Day02 {
             invalidIdSum += SumInvalidIdsInRange(range);
         }
         System.out.println("02.1: "+Long.toUnsignedString(invalidIdSum));
+    }
+
+    public static void part2(List<IdRange> ranges)
+    {
+        Long invalidIdSum = 0L;
+        for (IdRange range : ranges){
+            invalidIdSum += SumMultiRepeatIdsInRange(range);
+        }
+        System.out.println("02.2: "+Long.toUnsignedString(invalidIdSum));
     }
     
     public static List<IdRange> ReadRanges(String input){
@@ -65,30 +74,87 @@ public class Day02 {
                 if (candidateId >= range._min)
                     invalidIdSum += candidateId;
                 
-                // increment the repeated pattern:
-                int pos = halfLength -1;
-                while (pos >=0){
-                    if (repeatedPattern[pos] < '9'){
-                        repeatedPattern[pos]++;
+                done=IncrementPatern(repeatedPattern);
+                
+            }
+        }
+        return invalidIdSum;
+    }
+    
+    public static Long SumMultiRepeatIdsInRange(IdRange range){
+        ArrayList<Long> invalidIds=new ArrayList<Long>();
+        Long invalidIdSum = 0L;
+        String minString = Long.toString(range._min);
+        int minLength = minString.length();
+        int maxLength = Long.toString(range._max).length();
+        for (int idLength = minLength; idLength <= maxLength; idLength++) {
+            for (int repeatCount = 2; repeatCount <= idLength; repeatCount++) {
+                if (idLength % repeatCount == 1) {
+                    // repeat count does not evenly divide id length
+                    continue;
+                }
+                int repeatLength = idLength / repeatCount;
+                char[] repeatedPattern = new char[repeatLength];
+                if (idLength == minLength) {
+                    // digits of repeated pattern have to be at least as large
+                    // as leading digits of the minimum, or the resulting ID
+                    // will be less than the minimum
+                    for (int i = 0; i < repeatLength; i++) {
+                        repeatedPattern[i] = minString.charAt(i);
+                    }
+                } else {
+                    // start at all zeroes except 1st digit
+                    Arrays.fill(repeatedPattern, '0');
+                    repeatedPattern[0] = '1';
+                }
+                Boolean done = false;
+                while (!done) {
+                    String candidateIdStr = "";
+                    String repeatString = new String(repeatedPattern);
+                    for (int i = 0; i < repeatCount; i++) {
+                        candidateIdStr += repeatString;
+                    }
+                    long candidateId = Long.parseLong(candidateIdStr);
+                    if (Long.compareUnsigned(candidateId, range._max) > 0)
                         break;
-                    }
-                    else{
-                        // don't roll over the first digit
-                        if (pos==0){
-                            done=true;
-                            break;
+                    if ((candidateId >= range._min)
+                        && !invalidIds.contains(candidateId)) {
+                        invalidIds.add(candidateId);
+                        invalidIdSum += candidateId;
                         }
-                        repeatedPattern[pos]='0';
-                        pos--;
-                    }
+                    done = IncrementPatern(repeatedPattern);
+
                 }
             }
         }
-        
-        
         return invalidIdSum;
-    }
 
+    }
+    
+    
+    /**
+     * increment a numeric pattern represented as a char array
+     * @param pattern the pattern to be incremented
+     * @return true if the pattern can't be incremented without rolling over the first digit
+     */
+    static Boolean IncrementPatern(char[] pattern){
+        int pos = pattern.length -1;
+        while (pos >=0){
+            if (pattern[pos] < '9'){
+                pattern[pos]++;
+                return false;
+            }
+            else{
+                // don't roll over the first digit
+                if (pos==0){
+                    return true;
+                }
+                pattern[pos]='0';
+                pos--;
+            }
+        }
+        return false;
+    }
     static class IdRange{
         public long _min;
         public long _max;
