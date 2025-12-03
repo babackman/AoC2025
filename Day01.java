@@ -73,15 +73,18 @@ private static class Dial{
     }
     
     public int MoveAndCountZeroes(DialMovement movement) {
+        boolean startedAtZero = (_position == 0);
         // count full revolutions:
         int zeroCount = movement.GetSteps() / _positionCount;
+        // leftover steps after full revolutions:
         int steps = movement.GetSteps() % _positionCount;
         if (steps != 0) {
             if (movement.GetDirection() == 'R') {
                 _position += steps;
                 if (_position > _maxPosition){
                     _position -= _positionCount;
-                    zeroCount++;
+                    if (!startedAtZero)
+                        zeroCount++;
                 }
                 else if (_position == 0){
                     zeroCount++;
@@ -90,7 +93,8 @@ private static class Dial{
                 _position -= steps;
                 if (_position < 0){
                     _position += _positionCount;
-                    zeroCount++;
+                    if (!startedAtZero)
+                        zeroCount++;
                 }
                 else if (_position == 0){
                     zeroCount++;
