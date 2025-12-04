@@ -1,15 +1,18 @@
 import java.util.List;
 
 public class Day04 {
-    private List<String> _rollMap;
+    private char[][] _rollMap;
     private int _rows;
     private int _cols;
         
         public Day04(List<String> rollMap) {
             super();
-            _rollMap = rollMap;
             _rows= rollMap.size();
             _cols= rollMap.get(0).length();
+            _rollMap = new char[_rows][_cols];
+            for (int r=0; r<_rows; r++) {
+                _rollMap[r] = rollMap.get(r).toCharArray();
+            }
         }
     
         public static void Run(List<String> input)  {
@@ -51,7 +54,7 @@ public class Day04 {
             if (row<0 || row>=_rows || col<0 || col>=_cols) {
                 return false;
             }
-            return _rollMap.get(row).charAt(col)=='@';
+            return _rollMap[row][col]=='@';
         }
         
         int CountAdjacentRolls(int row, int col){
