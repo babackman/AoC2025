@@ -17,7 +17,7 @@ public class Day04 {
     
         public static void Run(List<String> input)  {
             Day04 day04 = new Day04(input);
-            day04.part1();
+            day04.part2();
         }
         
         void part1(){
@@ -32,29 +32,35 @@ public class Day04 {
             System.out.println("04.1: "+Integer.toString(accessibleCount));
         }
         
-/*         void part2(){
-            int totalRemoved=0;
-            boolean removedSomething=true;
-            do{
-            for (int r=0; r<_rows; r++) {
-                for (int c=0; c<_cols; c++) {
-                    if (IsAccessibleRoll(r,c)) {
-                        totalRemoved++;
-                        removedSomething=true;
-                        _rollM
+        void part2() {
+            int totalRemoved = 0;
+            boolean removedSomething = true;
+            do {
+                removedSomething = false;
+                for (int r = 0; r < _rows; r++) {
+                    for (int c = 0; c < _cols; c++) {
+                        if (IsAccessibleRoll(r, c)) {
+                            totalRemoved++;
+                            removedSomething = true;
+                            RemoveRoll(r, c);
+                        }
                     }
                 }
-            }
-                
-            } while(removedSomething);
-            System.out.println("04.2: "+Integer.toString(totalRemoved));
+            } while (removedSomething);
+            System.out.println("04.2: " + Integer.toString(totalRemoved));
         }
-*/        
+        
         boolean SpaceIsOccupied(int row, int col) {
             if (row<0 || row>=_rows || col<0 || col>=_cols) {
                 return false;
             }
             return _rollMap[row][col]=='@';
+        }
+        void  RemoveRoll(int row, int col){
+            if (row<0 || row>=_rows || col<0 || col>=_cols) {
+                return;
+            }
+            _rollMap[row][col] = '.';
         }
         
         int CountAdjacentRolls(int row, int col){
