@@ -33,35 +33,38 @@ public class Day05 {
     }
 
     private static void part2(IngredientDb db) {
-        long freshCount = 0;
+        ArrayList<IdRange> uniqueRanges = new ArrayList<IdRange>();
         for (int i=0; i < db.freshRanges.size(); i++) {
-            IdRange range = db.freshRanges.get(i);
-            if (i==0) {
-                freshCount = range.max - range.min + 1;
-                continue;
-            }
-            for (long ingredient=range.min; ingredient <= range.max; ingredient++) {
-                // check if the ingredient is in any of the previous ranges
-                boolean inPreviousRange = false;
-                for (int prevIndex = 0; prevIndex < i; prevIndex++) {
-                    IdRange prevRange = db.freshRanges.get(prevIndex);
-                    if (Long.compareUnsigned(ingredient, prevRange.min) < 0) {
-                        // ingredient is less than the minimum of this range, so it can't be in any
-                        // further ranges
-                        break;
-                    }
-                    if (Long.compareUnsigned(ingredient, prevRange.max) <= 0) {
-                        // ingredient is in this range
-                        inPreviousRange = true;
+            ArrayList<IdRange> newRanges = new ArrayList<IdRange>();
+            newRanges.add( db.freshRanges.get(i));
+            while(!newRanges.isEmpty()){
+                IdRange candidate = newRanges.remove(0);
+                boolean isUnique = true;
+                for(IdRange existing : uniqueRanges){
+                    if (candidate.overlaps(existing)){
+                        isUnique = false;
+                        // split candidate into non-overlapping parts
+                        if (Long.compareUnsigned(candidate.min, existing.min) < 0){
+                            newRanges.add( new IdRange(candidate.min + "-" + (existing.min - 1)));
+                        }
+                        if (Long.compareUnsigned(candidate.max, existing.max) > 0){
+                            newRanges.add( new IdRange((existing.max + 1) + "-" + candidate.max));
+                        }
                         break;
                     }
                 }
-                if (!inPreviousRange) {
-                    freshCount++;
+                if (isUnique) {
+                    uniqueRanges.add(candidate);
                 }
             }
         }  
-        System.out.println("5.2: fresh count: " + freshCount);
+
+        long freshCount = 0;
+        for(IdRange range : uniqueRanges){
+            freshCount += range.count();
+        }
+
+        System.out.println("5.2: fresh count: " + Long.toUnsignedString(freshCount));
     }
     private static class IngredientDb {
         public List<IdRange> freshRanges;
@@ -105,5 +108,14 @@ public class Day05 {
             min=Long.parseLong(tokens[0]);
             max=Long.parseLong(tokens[1]);
         } 
+
+        public boolean overlaps(IdRange other){
+            return Long.compareUnsigned(this.min, other.max) <= 0 &&
+                   Long.compareUnsigned(other.min, this.max) <= 0;
+        }
+        
+        public long count(){
+            return (max - min + 1);
+        }
     }
 }
