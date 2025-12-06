@@ -1,5 +1,5 @@
-// Advent of Code 2023
-// https://adventofcode.com/2023
+// Advent of Code 2025
+// https://adventofcode.com/2025
 
 // Imports for file processing and arrays
 import java.nio.file.*;
@@ -9,8 +9,8 @@ class Main {
 
   public static void main(String[] args) throws java.io.IOException {
 
-    List<String> lines = Files.readAllLines(Paths.get("data","06_data.txt"));
-    Day06.Run(lines); 
+    List<String> lines = Files.readAllLines(Paths.get("data","05_data.txt"));
+    Day05.Run(lines); 
   }
 
 }
